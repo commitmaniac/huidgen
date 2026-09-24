@@ -8,8 +8,10 @@
 #include <stdio.h>
 
 #define HUID_CAP 16
+#define HUID_SUFFIX_CAP 256
 
 char *huid_generate(void);
+char *huid_append_suffix(char *id, const char *suffix);
 
 #endif
 
@@ -29,6 +31,13 @@ char *huid_generate(void)
         timeinfo->tm_min,
         timeinfo->tm_sec);
 
+    return buf;
+}
+
+char *huid_append_suffix(char *id, const char *suffix)
+{
+    static char buf[HUID_SUFFIX_CAP];
+    snprintf(buf, sizeof(buf), "%s-%s", id, suffix);
     return buf;
 }
 
