@@ -1,0 +1,76 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - '**'
+    paths:
+      - '*.h'
+      - '*.c'
+      - 'Makefile'
+      - '.github/workflows/*'
+  pull_request:
+    branches:
+      - master
+    paths:
+      - '*.h'
+      - '*.c'
+      - 'Makefile'
+      - '.github/workflows/*'
+  workflow_dispatch:
+  release:
+    types:
+      - created
+
+jobs:
+  build:
+    name: Build
+    strategy:
+      matrix:
+        os:
+          - ubuntu-latest
+        arch:
+          - x86_64
+        platform:
+          - linux
+          - windows
+        include:
+          - os: ubuntu-26.04-arm
+            arch: aarch64
+            platform: linux
+    permissions:
+      contents: write
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+      - name: Setup environment
+        run: |
+          echo "OUT=huidgen-${{ matrix.platform }}-${{ matrix.arch }}" >> "$GITHUB_ENV"
+          echo "LDFLAGS=-static" >> "$GITHUB_ENV"
+          if [ "${{ matrix.platform }}" = 'windows' ]; then
+            sudo apt install gcc-mingw-w64-x86-64
+            echo "CC=x86_64-w64-mingw32-gcc" >> "$GITHUB_ENV"
+            echo "EXT=.exe" >> "$GITHUB_ENV"
+          else
+            echo "EXT=" >> "$GITHUB_ENV"
+          fi
+      - name: Build
+        run: make
+      - name: Rename
+        run: |
+          mv huidgen${{ env.EXT }} ${{ env.OUT }}${{ env.EXT }}
+      - name: Strip
+        if: ${{ github.event_name == 'release' }}
+        run: |
+          strip ${{ env.OUT }}${{ env.EXT }}
+      - name: Upload artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ env.OUT }}
+          path: ${{ env.OUT }}${{ env.EXT }}
+      - name: Upload artifact to releases
+        uses: softprops/action-gh-release@v3
+        if: ${{ github.event_name == 'release' }}
+        with:
+          files: ${{ env.OUT }}${{ env.EXT }}
