@@ -4,9 +4,9 @@
 #define HUID_IMPLEMENTATION
 #include "huid.h"
 
+#include <getopt.h>
 #include <stdbool.h>
 #include <stdlib.h>
-#include <unistd.h>
 
 static void usage(char *pname)
 {
