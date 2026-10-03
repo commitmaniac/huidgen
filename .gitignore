@@ -2,3 +2,4 @@ huidgen
 .DS_Store
 
 *.[Ee][Xx][Ee]
+config.h
