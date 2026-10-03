@@ -1,0 +1,60 @@
+.\"
+.\" SPDX-License-Identifier: MIT
+.\" SPDX-FileCopyrightText: Copyright (c) 2026 commitmaniac
+.\"
+.Dd October 3, 2026
+.Dt HUIDGEN 1
+.Os
+.Sh NAME
+.Nm huidgen
+.Nd generate HUIDs
+.Sh SYNOPSIS
+.Nm
+.Op Fl s Ar suffix
+.Sh DESCRIPTION
+.Nm
+generates a Human-Unique IDentifier
+.Pq HUID ,
+a 16-bit value guaranteed to be unique over time.
+HUID(s) are composed of the date and time
+.Pq Sy in UTC ,
+separated in-between by a dash.
+.Pp
+Practically, HUIDs serve a purpose close to Twitter Snowflake IDs.
+However, the scope is lesser since HUIDs are meant to be generated
+at the human scale.
+.Pp
+The following options are available
+.Bl -tag -width ".Fl s Ar suffix"
+.It Fl s Ar suffix
+Append a given suffix to the generated HUID.
+.El
+.Sh EXAMPLES
+Generate a naked HUID
+.Pp
+.Dl $ huidgen
+.Dl 20261003-054214
+.Pp
+Generate a HUID with
+.Ar suffix ,
+rexim
+.Pp
+.Dl $ huidgen -s rexim
+.Dl 20261003-054214-rexim
+.Sh HISTORY
+The HUID specification used by
+.Nm
+was written by
+.An Alexey Kutepov
+.Pq rexim ,
+later featured in
+.Ar tsoding/tatr ,
+a task tracker hosted on GitHub.
+.Sh CAVEATS
+While the HUID specification used by
+.Nm
+does not provide a particular byte cap, HUIDs
+generated with the
+.Fl s
+flag are capped to 256 bytes, more than enough
+for practical use.
